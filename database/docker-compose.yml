@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pet-grooming-postgres
+    environment:
+      POSTGRES_DB: petgrooming
+      POSTGRES_USER: petgrooming
+      POSTGRES_PASSWORD: petgrooming
+    ports:
+      - "5432:5432"
+    volumes:
+      - pet_grooming_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petgrooming -d petgrooming"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pet_grooming_pg_data:

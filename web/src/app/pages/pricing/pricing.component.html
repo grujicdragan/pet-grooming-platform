@@ -1,0 +1,24 @@
+<section class="panel pricing">
+  <p class="eyebrow">Cenovnik</p>
+  <h1>Jasne cene, bez sitnog tiskanog</h1>
+  <p class="lede">
+    Svaki peti tretman u ciklusu dobija popust kroz loyalty program.
+  </p>
+
+  @if (loading()) {
+    <p>Učitavanje…</p>
+  } @else {
+    <div class="cards">
+      @for (service of services(); track service.id) {
+        <article>
+          <h2>{{ service.label }}</h2>
+          <p class="price">{{ service.price | currency: service.currency : 'symbol' : '1.0-0' }}</p>
+          <p class="meta">{{ service.minutes }} min</p>
+          <p>{{ service.blurb }}</p>
+        </article>
+      }
+    </div>
+  }
+
+  <a routerLink="/book" class="btn btn-primary">Zakaži tretman</a>
+</section>

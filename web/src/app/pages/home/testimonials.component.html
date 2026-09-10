@@ -1,0 +1,62 @@
+@if (items().length === 0) {
+  <p>Još nema utisaka.</p>
+} @else {
+  <article
+    class="carousel"
+    aria-roledescription="carousel"
+    aria-label="Utisci klijenata"
+    (mouseenter)="pause()"
+    (mouseleave)="resume()"
+    (focusin)="pause()"
+    (focusout)="resume()"
+  >
+    <div class="media" aria-hidden="true">
+      @for (item of items(); track item.name; let i = $index) {
+        <img [src]="item.photo" [alt]="item.pet" class="slide-img" [class.active]="index() === i" />
+      }
+      <span class="quote-mark">“</span>
+    </div>
+
+    <div class="copy">
+      <div class="slides" aria-live="polite">
+        @for (item of items(); track item.name; let i = $index) {
+          @if (index() === i) {
+            <div class="slide">
+              <blockquote>{{ item.quote }}</blockquote>
+              <p>
+                <strong>{{ item.name }}</strong>
+                <span>{{ item.pet }}</span>
+              </p>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="controls">
+        <button type="button" class="arrow" (click)="prev()" aria-label="Prethodni utisak">←</button>
+        <div class="dots">
+          @for (item of items(); track item.name; let i = $index) {
+            <button
+              type="button"
+              class="dot"
+              [class.active]="index() === i"
+              [attr.aria-label]="'Utisak ' + (i + 1)"
+              [attr.aria-current]="index() === i ? 'true' : null"
+              (click)="goTo(i)"
+            >
+              @if (index() === i) {
+                <span
+                  class="dot-fill"
+                  [class.paused]="paused()"
+                  [style.animation-duration.ms]="intervalMs"
+                ></span>
+              }
+            </button>
+          }
+        </div>
+        <button type="button" class="arrow" (click)="next()" aria-label="Sledeći utisak">→</button>
+        <span class="counter">{{ index() + 1 }} / {{ items().length }}</span>
+      </div>
+    </div>
+  </article>
+}

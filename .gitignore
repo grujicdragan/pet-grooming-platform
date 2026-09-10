@@ -6,3 +6,8 @@ node_modules/
 .idea/
 *.log
 .DS_Store
+api/target/
+**/target/
+*.class
+.env
+.env.*

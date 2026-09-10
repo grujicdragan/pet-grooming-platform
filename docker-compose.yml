@@ -1,0 +1,33 @@
+﻿services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pet-grooming-postgres
+    environment:
+      POSTGRES_DB: petgrooming
+      POSTGRES_USER: petgrooming
+      POSTGRES_PASSWORD: petgrooming
+    ports:
+      - "5432:5432"
+    volumes:
+      - pet_grooming_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petgrooming -d petgrooming"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./api
+    container_name: pet-grooming-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/petgrooming
+      SPRING_DATASOURCE_USERNAME: petgrooming
+      SPRING_DATASOURCE_PASSWORD: petgrooming
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pet_grooming_pg_data:

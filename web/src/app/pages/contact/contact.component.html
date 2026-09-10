@@ -1,0 +1,50 @@
+@if (salon(); as salon) {
+  <section class="panel contact">
+    <p class="eyebrow">Kontakt</p>
+    <h1>Dođi ili nas pozovi</h1>
+    <p class="lede">
+      {{ salon.displayName }} je atelje za pse
+      @if (salon.state) {
+        na {{ salon.state }}
+      }
+      . Zakazivanje je i online, a za hitne termine javi se telefonom ili na Instagram.
+    </p>
+
+    <div class="grid">
+      <div class="cards">
+        <article>
+          <p class="label">Telefon</p>
+          <a [href]="salon.phoneHref">{{ salon.phoneDisplay }}</a>
+          <p>Pozovi i dogovori termin.</p>
+        </article>
+
+        <article>
+          <p class="label">Adresa</p>
+          <a [href]="salon.mapsSearchUrl" target="_blank" rel="noopener noreferrer">{{
+            salon.address
+          }}</a>
+          <p>Otvori lokaciju u Google Mapama.</p>
+        </article>
+
+        @if (instagram(); as ig) {
+          <article>
+            <p class="label">Instagram</p>
+            <a [href]="ig.url" target="_blank" rel="noopener noreferrer">{{ ig.handle }}</a>
+            <p>Kupanje, šišanje i stilizovanje.</p>
+          </article>
+        }
+      </div>
+
+      @if (mapUrl(); as url) {
+        <div class="map-wrap">
+          <iframe
+            [title]="salon.displayName + ' na Google mapi'"
+            [src]="url"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      }
+    </div>
+  </section>
+}
