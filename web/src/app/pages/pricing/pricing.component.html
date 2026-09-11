@@ -1,24 +1,22 @@
 <section class="panel pricing">
-  <p class="eyebrow">Cenovnik</p>
-  <h1>Jasne cene, bez sitnog tiskanog</h1>
-  <p class="lede">
-    Svaki peti tretman u ciklusu dobija popust kroz loyalty program.
-  </p>
+  <p class="eyebrow">{{ 'pricing.eyebrow' | t }}</p>
+  <h1>{{ 'pricing.title' | t }}</h1>
+  <p class="lede">{{ 'pricing.lede' | t: { per: perReward() } }}</p>
 
   @if (loading()) {
-    <p>Učitavanje…</p>
+    <p>{{ 'common.loading' | t }}</p>
   } @else {
     <div class="cards">
       @for (service of services(); track service.id) {
         <article>
           <h2>{{ service.label }}</h2>
-          <p class="price">{{ service.price | currency: service.currency : 'symbol' : '1.0-0' }}</p>
-          <p class="meta">{{ service.minutes }} min</p>
+          <p class="price">{{ service.price | price: service.currency }}</p>
+          <p class="meta">{{ service.minutes }} {{ 'common.minutes' | t }}</p>
           <p>{{ service.blurb }}</p>
         </article>
       }
     </div>
   }
 
-  <a routerLink="/book" class="btn btn-primary">Zakaži tretman</a>
+  <a routerLink="/book" class="btn btn-primary">{{ 'pricing.cta' | t }}</a>
 </section>

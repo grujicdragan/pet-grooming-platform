@@ -45,6 +45,10 @@ public class SiteSection {
   @Column(name = "display_order", nullable = false)
   private int displayOrder;
 
+  public UUID getId() {
+    return id;
+  }
+
   public UUID getTenantId() {
     return tenantId;
   }

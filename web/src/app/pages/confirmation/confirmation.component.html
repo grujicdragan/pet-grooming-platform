@@ -1,40 +1,40 @@
 <section class="panel confirm">
   @if (booking.lastBooking(); as visit) {
-    <p class="eyebrow">Potvrda</p>
-    <h1>Termin je spreman</h1>
-    <p class="lede">Ovo je samo UI tok. Ništa nije upisano u bazu niti na disk.</p>
+    <p class="eyebrow">{{ 'confirm.eyebrow' | t }}</p>
+    <h1>{{ 'confirm.title' | t }}</h1>
+    <p class="lede">{{ 'confirm.lede' | t }}</p>
 
     <dl>
       <div>
-        <dt>Ljubimac</dt>
+        <dt>{{ 'confirm.pet' | t }}</dt>
         <dd>{{ visit.petName }}</dd>
       </div>
       <div>
-        <dt>Usluga</dt>
-        <dd>{{ visit.service }}</dd>
+        <dt>{{ 'confirm.service' | t }}</dt>
+        <dd>{{ serviceLabel(visit.serviceId, visit.service) }}</dd>
       </div>
       <div>
-        <dt>Kad</dt>
-        <dd>{{ visit.date | date: 'fullDate' }} u {{ visit.time }}</dd>
+        <dt>{{ 'confirm.when' | t }}</dt>
+        <dd>{{ visit.date | ldate: 'full' }} {{ 'confirm.at' | t }} {{ visit.time }}</dd>
       </div>
       <div>
-        <dt>Cena</dt>
+        <dt>{{ 'confirm.price' | t }}</dt>
         <dd>
-          {{ visit.price | currency: 'RSD' : 'symbol' : '1.0-0' }}
+          {{ visit.price | price }}
           @if (visit.discounted) {
-            <span class="chip">40% loyalty popust</span>
+            <span class="chip">{{ 'confirm.discountChip' | t: { discount: discountPct() } }}</span>
           }
         </dd>
       </div>
     </dl>
 
     <div class="actions">
-      <a routerLink="/loyalty" class="btn btn-secondary" (click)="finishVisit()">Simuliraj završen tretman</a>
-      <a routerLink="/book" class="btn btn-primary">Novi termin</a>
+      <a routerLink="/loyalty" class="btn btn-secondary" (click)="finishVisit()">{{ 'confirm.simulate' | t }}</a>
+      <a routerLink="/book" class="btn btn-primary">{{ 'confirm.newBooking' | t }}</a>
     </div>
   } @else {
-    <h1>Nema aktivnog termina</h1>
-    <p class="lede">Prvo izaberi datum i vreme.</p>
-    <a routerLink="/book" class="btn btn-primary">Idi na zakazivanje</a>
+    <h1>{{ 'confirm.emptyTitle' | t }}</h1>
+    <p class="lede">{{ 'confirm.emptyLede' | t }}</p>
+    <a routerLink="/book" class="btn btn-primary">{{ 'confirm.goBook' | t }}</a>
   }
 </section>

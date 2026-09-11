@@ -224,4 +224,10 @@ VALUES
     'testimonials',
     TRUE,
     '{}'::jsonb
+  ),
+  (
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    'dark_mode',
+    TRUE,
+    '{}'::jsonb
   );

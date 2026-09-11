@@ -1,28 +1,26 @@
 <section class="panel admin">
-  <p class="eyebrow">Osoblje</p>
-  <h1>Pregled termina</h1>
-  <p class="lede">
-    Lista je u memoriji aplikacije. Seed podaci su tu da salon izgleda pun, a novi termini sa
-    zakazivanja se dodaju odmah.
-  </p>
+  <p class="eyebrow">{{ 'admin.eyebrow' | t }}</p>
+  <h1>{{ 'admin.title' | t }}</h1>
+  <p class="lede">{{ 'admin.lede' | t }}</p>
 
   <div class="filters">
-    <button type="button" [class.active]="filter() === 'all'" (click)="setFilter('all')">Svi</button>
-    <button type="button" [class.active]="filter() === 'scheduled'" (click)="setFilter('scheduled')">Zakazani</button>
-    <button type="button" [class.active]="filter() === 'completed'" (click)="setFilter('completed')">Završeni</button>
-    <button type="button" [class.active]="filter() === 'cancelled'" (click)="setFilter('cancelled')">Otkazani</button>
+    @for (option of filters; track option) {
+      <button type="button" [class.active]="filter() === option" (click)="setFilter(option)">
+        {{ 'admin.filter.' + option | t }}
+      </button>
+    }
   </div>
 
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>Kad</th>
-          <th>Ljubimac</th>
-          <th>Usluga</th>
-          <th>Vlasnik</th>
-          <th>Cena</th>
-          <th>Status</th>
+          <th>{{ 'admin.col.when' | t }}</th>
+          <th>{{ 'admin.col.pet' | t }}</th>
+          <th>{{ 'admin.col.service' | t }}</th>
+          <th>{{ 'admin.col.owner' | t }}</th>
+          <th>{{ 'admin.col.price' | t }}</th>
+          <th>{{ 'admin.col.status' | t }}</th>
           <th></th>
         </tr>
       </thead>
@@ -30,32 +28,32 @@
         @for (row of rows(); track row.id) {
           <tr>
             <td>
-              <strong>{{ row.date | date: 'dd.MM.' }} {{ row.time }}</strong>
+              <strong>{{ row.date | ldate: 'short' }} {{ row.time }}</strong>
             </td>
             <td>{{ row.petName }}</td>
             <td>
-              {{ row.service }}
+              {{ serviceLabel(row.serviceId, row.service) }}
               @if (row.discounted) {
-                <span class="chip">-40%</span>
+                <span class="chip">-{{ discountPct() }}%</span>
               }
             </td>
             <td>{{ row.ownerName }}</td>
-            <td>{{ row.price | currency: 'RSD' : 'symbol' : '1.0-0' }}</td>
+            <td>{{ row.price | price }}</td>
             <td>
-              <span class="status" [attr.data-status]="row.status">{{ labels[row.status] }}</span>
+              <span class="status" [attr.data-status]="row.status">{{ 'admin.status.' + row.status | t }}</span>
             </td>
             <td class="actions">
               @if (row.status === 'scheduled') {
                 <div class="action-btns">
-                  <button type="button" (click)="complete(row.id)">Završi</button>
-                  <button type="button" class="ghost" (click)="cancel(row.id)">Otkaži</button>
+                  <button type="button" (click)="complete(row.id)">{{ 'admin.complete' | t }}</button>
+                  <button type="button" class="ghost" (click)="cancel(row.id)">{{ 'admin.cancel' | t }}</button>
                 </div>
               }
             </td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="7">Nema termina za ovaj filter.</td>
+            <td colspan="7">{{ 'admin.empty' | t }}</td>
           </tr>
         }
       </tbody>

@@ -1,44 +1,41 @@
 <section class="layout">
   <div class="panel form-card">
-    <p class="eyebrow">Zakazivanje</p>
-    <h1>Izaberi dan i sat</h1>
-    <p class="lede">Jedan korak: ljubimac, usluga, datum i slobodan termin.</p>
+    <p class="eyebrow">{{ 'book.eyebrow' | t }}</p>
+    <h1>{{ 'book.title' | t }}</h1>
+    <p class="lede">{{ 'book.lede' | t }}</p>
 
     @if (loyalty.nextIsReward()) {
-      <p class="reward-banner">
-        Sledeći tretman je nagradni —
-        {{ loyalty.rewardDiscount() * 100 | number: '1.0-0' }}% popusta se automatski primenjuje.
-      </p>
+      <p class="reward-banner">{{ 'book.rewardBanner' | t: { discount: discountPct() } }}</p>
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()">
       <label class="field">
-        <span>Ime ljubimca</span>
-        <input type="text" formControlName="petName" placeholder="Luna" />
+        <span>{{ 'book.petName' | t }}</span>
+        <input type="text" formControlName="petName" [placeholder]="'book.petNamePlaceholder' | t" />
         @if (submitted && form.controls.petName.invalid) {
-          <small class="error">Unesi ime ljubimca.</small>
+          <small class="error">{{ 'book.petNameError' | t }}</small>
         }
       </label>
 
       <label class="field">
-        <span>Usluga</span>
+        <span>{{ 'book.service' | t }}</span>
         <select formControlName="service">
           @for (service of services(); track service.id) {
             <option [value]="service.id">
-              {{ service.label }} · {{ service.minutes }} min · {{ service.price }}
-              {{ service.currency }}
+              {{ service.label }} · {{ service.minutes }} {{ 'common.minutes' | t }} ·
+              {{ service.price | price: service.currency }}
             </option>
           }
         </select>
       </label>
 
       <label class="field">
-        <span>Datum</span>
+        <span>{{ 'book.date' | t }}</span>
         <input type="date" formControlName="date" [min]="minDate" />
       </label>
 
       <fieldset class="slots">
-        <legend>Vreme</legend>
+        <legend>{{ 'book.time' | t }}</legend>
         <div class="slot-grid">
           @for (time of times(); track time) {
             <button
@@ -52,34 +49,28 @@
           }
         </div>
         @if (submitted && form.controls.time.invalid) {
-          <small class="error">Izaberi termin.</small>
+          <small class="error">{{ 'book.timeError' | t }}</small>
         }
       </fieldset>
 
-      <button class="btn btn-primary" type="submit">Potvrdi termin</button>
+      <button class="btn btn-primary" type="submit">{{ 'book.submit' | t }}</button>
     </form>
   </div>
 
   <aside class="panel summary">
-    <p class="eyebrow">Loyalty snapshot</p>
-    <h2>{{ auth.user()?.name }}, tvoja kartica</h2>
+    <p class="eyebrow">{{ 'book.snapshotEyebrow' | t }}</p>
+    <h2>{{ 'book.snapshotTitle' | t: { name: auth.user()?.name } }}</h2>
     <p>
       @if (loyalty.nextIsReward()) {
-        Sledeći tretman je nagradni —
-        {{ loyalty.rewardDiscount() * 100 | number: '1.0-0' }}% popusta.
+        {{ 'book.nextIsReward' | t: { discount: discountPct() } }}
       } @else {
-        Još {{ loyalty.treatmentsUntilReward() }} tretmana do nagrade od
-        {{ loyalty.rewardDiscount() * 100 | number: '1.0-0' }}%.
+        {{ 'book.untilReward' | t: { n: loyalty.treatmentsUntilReward(), discount: discountPct() } }}
       }
     </p>
     <div class="mini-stamps">
       @for (stamp of loyalty.stamps(); track stamp.number) {
         <span [class.filled]="stamp.filled" [class.reward]="stamp.reward">
-          {{
-            stamp.reward
-              ? '-' + (loyalty.rewardDiscount() * 100 | number: '1.0-0') + '%'
-              : stamp.number
-          }}
+          {{ stamp.reward ? '-' + discountPct() + '%' : stamp.number }}
         </span>
       }
     </div>

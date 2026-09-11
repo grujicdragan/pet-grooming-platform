@@ -1,10 +1,10 @@
 @if (items().length === 0) {
-  <p>Još nema utisaka.</p>
+  <p>{{ 'testimonials.empty' | t }}</p>
 } @else {
   <article
     class="carousel"
     aria-roledescription="carousel"
-    aria-label="Utisci klijenata"
+    [attr.aria-label]="'testimonials.label' | t"
     (mouseenter)="pause()"
     (mouseleave)="resume()"
     (focusin)="pause()"
@@ -33,14 +33,14 @@
       </div>
 
       <div class="controls">
-        <button type="button" class="arrow" (click)="prev()" aria-label="Prethodni utisak">←</button>
+        <button type="button" class="arrow" (click)="prev()" [attr.aria-label]="'testimonials.prev' | t">←</button>
         <div class="dots">
           @for (item of items(); track item.name; let i = $index) {
             <button
               type="button"
               class="dot"
               [class.active]="index() === i"
-              [attr.aria-label]="'Utisak ' + (i + 1)"
+              [attr.aria-label]="'testimonials.goTo' | t: { n: i + 1 }"
               [attr.aria-current]="index() === i ? 'true' : null"
               (click)="goTo(i)"
             >
@@ -54,7 +54,7 @@
             </button>
           }
         </div>
-        <button type="button" class="arrow" (click)="next()" aria-label="Sledeći utisak">→</button>
+        <button type="button" class="arrow" (click)="next()" [attr.aria-label]="'testimonials.next' | t">→</button>
         <span class="counter">{{ index() + 1 }} / {{ items().length }}</span>
       </div>
     </div>

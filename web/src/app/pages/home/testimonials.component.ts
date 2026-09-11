@@ -1,9 +1,11 @@
 import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { TranslatePipe } from '../../core/i18n.pipes';
 import { TenantStore } from '../../core/tenant.store';
 
 @Component({
   selector: 'app-testimonials',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './testimonials.component.html',
   styleUrl: './testimonials.component.scss',
 })

@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { LocalizedPricePipe, TranslatePipe } from '../../core/i18n.pipes';
 import { RevealDirective } from '../../core/reveal.directive';
 import { TenantStore } from '../../core/tenant.store';
 import { TestimonialsComponent } from './testimonials.component';
@@ -8,7 +8,7 @@ import { TestimonialsComponent } from './testimonials.component';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, CurrencyPipe, RevealDirective, TestimonialsComponent],
+  imports: [RouterLink, RevealDirective, TestimonialsComponent, TranslatePipe, LocalizedPricePipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

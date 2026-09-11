@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { catchError, of, tap } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Subscription, catchError, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { readStoredLocale } from '../i18n/locale-storage';
 import {
   FeatureInfo,
   GroomingService,
@@ -20,9 +21,14 @@ export class TenantStore {
   private readonly siteSignal = signal<TenantSite | null>(null);
   private readonly loadingSignal = signal(true);
   private readonly errorSignal = signal<string | null>(null);
+  /** Locale sent as `?locale=`; seeded from storage so the first fetch is already localized. */
+  private readonly requestLocale = signal<string | null>(readStoredLocale());
+  private inflight: Subscription | null = null;
 
   readonly site = this.siteSignal.asReadonly();
+  /** True only until the first successful/failed load — locale switches keep the current data visible. */
   readonly loading = this.loadingSignal.asReadonly();
+  /** Translation key of the current error (see i18n dictionaries), or null. */
   readonly error = this.errorSignal.asReadonly();
 
   readonly salon = computed<SalonInfo | null>(() => this.siteSignal()?.salon ?? null);
@@ -64,15 +70,31 @@ export class TenantStore {
   });
 
   constructor() {
-    this.reload();
+    effect(() => {
+      const locale = this.requestLocale();
+      untracked(() => this.load(locale));
+    });
+  }
+
+  /** Called by LocaleService; a change triggers a refetch of localized content. */
+  setRequestLocale(locale: string | null): void {
+    this.requestLocale.set(locale);
   }
 
   reload(): void {
-    this.loadingSignal.set(true);
+    this.load(this.requestLocale());
+  }
+
+  private load(locale: string | null): void {
+    this.inflight?.unsubscribe();
+    if (!this.siteSignal()) {
+      this.loadingSignal.set(true);
+    }
     this.errorSignal.set(null);
     const url = `${environment.apiUrl}/api/public/tenants/${environment.tenantSlug}`;
-    this.http
-      .get<TenantSite>(url)
+    const params = locale ? new HttpParams().set('locale', locale) : undefined;
+    this.inflight = this.http
+      .get<TenantSite>(url, { params })
       .pipe(
         tap((site) => {
           this.siteSignal.set(site);
@@ -80,7 +102,7 @@ export class TenantStore {
         }),
         catchError((err) => {
           console.error('Failed to load tenant site', err);
-          this.errorSignal.set('Ne mogu da učitam podatke salona. Proveri da li API radi.');
+          this.errorSignal.set('error.api');
           this.loadingSignal.set(false);
           return of(null);
         }),

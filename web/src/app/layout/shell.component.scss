@@ -10,7 +10,7 @@
   gap: 1.25rem;
   align-items: center;
   padding: 1.1rem 6vw;
-  background: color-mix(in srgb, var(--paper) 88%, white);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(12px);
   position: sticky;
@@ -103,7 +103,7 @@
 
 .primary-link {
   background: var(--moss);
-  color: white;
+  color: var(--on-primary);
   border-color: transparent;
 }
 
@@ -203,7 +203,7 @@
     position: fixed;
     inset: 0;
     border: 0;
-    background: rgba(31, 42, 36, 0.28);
+    background: var(--overlay);
     z-index: 9;
     cursor: pointer;
   }
@@ -263,7 +263,7 @@
   margin: 1rem 6vw 0;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  background: color-mix(in srgb, #c46a3a 18%, white);
-  color: #5c2a14;
-  border: 1px solid color-mix(in srgb, #c46a3a 35%, white);
+  background: var(--error-bg);
+  color: var(--error-fg);
+  border: 1px solid var(--error-line);
 }

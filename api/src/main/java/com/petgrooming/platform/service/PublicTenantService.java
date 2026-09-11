@@ -16,6 +16,7 @@ import com.petgrooming.platform.dto.TenantSiteResponse.ServiceDto;
 import com.petgrooming.platform.dto.TenantSiteResponse.SiteSectionDto;
 import com.petgrooming.platform.dto.TenantSiteResponse.SocialLinkDto;
 import com.petgrooming.platform.dto.TenantSiteResponse.TestimonialDto;
+import com.petgrooming.platform.repository.ContentTranslationRepository;
 import com.petgrooming.platform.repository.LocationRepository;
 import com.petgrooming.platform.repository.SalonBrandingRepository;
 import com.petgrooming.platform.repository.SalonGalleryRepository;
@@ -30,6 +31,7 @@ import com.petgrooming.platform.repository.TestimonialRepository;
 import com.petgrooming.platform.web.NotFoundException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,7 +41,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PublicTenantService {
 
+  private static final String LOCALIZATION_FEATURE = "localization";
+
   private final RlsSessionSupport rlsSessionSupport;
+  private final ContentTranslationRepository contentTranslationRepository;
   private final TenantRepository tenantRepository;
   private final SalonProfileRepository salonProfileRepository;
   private final SalonBrandingRepository salonBrandingRepository;
@@ -54,6 +59,7 @@ public class PublicTenantService {
 
   public PublicTenantService(
       RlsSessionSupport rlsSessionSupport,
+      ContentTranslationRepository contentTranslationRepository,
       TenantRepository tenantRepository,
       SalonProfileRepository salonProfileRepository,
       SalonBrandingRepository salonBrandingRepository,
@@ -67,6 +73,7 @@ public class PublicTenantService {
       TenantFeatureRepository tenantFeatureRepository
   ) {
     this.rlsSessionSupport = rlsSessionSupport;
+    this.contentTranslationRepository = contentTranslationRepository;
     this.tenantRepository = tenantRepository;
     this.salonProfileRepository = salonProfileRepository;
     this.salonBrandingRepository = salonBrandingRepository;
@@ -82,6 +89,11 @@ public class PublicTenantService {
 
   @Transactional
   public TenantSiteResponse getSiteBySlug(String slug) {
+    return getSiteBySlug(slug, null);
+  }
+
+  @Transactional
+  public TenantSiteResponse getSiteBySlug(String slug, String requestedLocale) {
     rlsSessionSupport.enableBypass();
 
     Tenant tenant = tenantRepository.findBySlugIgnoreCaseAndActiveTrue(slug)
@@ -91,13 +103,25 @@ public class PublicTenantService {
     SalonProfile profile = salonProfileRepository.findByTenantId(tenantId)
         .orElseThrow(() -> new NotFoundException("Salon profile missing for tenant: " + slug));
 
+    Map<String, FeatureDto> features = new LinkedHashMap<>();
+    tenantFeatureRepository.findByTenantId(tenantId)
+        .forEach(feature -> features.put(
+            feature.getFeatureKey(),
+            new FeatureDto(feature.isEnabled(), feature.getConfigJson())
+        ));
+
+    String locale = resolveLocale(requestedLocale, features.get(LOCALIZATION_FEATURE));
+    ContentTranslator tr = locale == null
+        ? ContentTranslator.none()
+        : ContentTranslator.of(contentTranslationRepository.findByTenantIdAndLocale(tenantId, locale));
+
     Map<UUID, ServicePrice> priceByService = servicePriceRepository.findByTenantId(tenantId).stream()
         .collect(Collectors.toMap(ServicePrice::getServiceId, p -> p, (a, b) -> a));
 
     List<ServiceDto> services = serviceOfferRepository
         .findByTenantIdAndActiveTrueOrderByDisplayOrderAsc(tenantId)
         .stream()
-        .map(service -> toServiceDto(service, priceByService.get(service.getId())))
+        .map(service -> toServiceDto(service, priceByService.get(service.getId()), tr))
         .toList();
 
     Location primaryLocation = locationRepository
@@ -108,25 +132,22 @@ public class PublicTenantService {
 
     Map<String, SiteSectionDto> sections = new LinkedHashMap<>();
     siteSectionRepository.findByTenantIdAndVisibleTrueOrderByDisplayOrderAsc(tenantId)
-        .forEach(section -> sections.put(
-            section.getSectionKey(),
-            new SiteSectionDto(
-                section.getTitle(),
-                section.getSubtitle(),
-                section.getBody(),
-                section.getContentJson(),
-                section.getImageUrl(),
-                section.getCtaLabel(),
-                section.getCtaUrl()
-            )
-        ));
-
-    Map<String, FeatureDto> features = new LinkedHashMap<>();
-    tenantFeatureRepository.findByTenantId(tenantId)
-        .forEach(feature -> features.put(
-            feature.getFeatureKey(),
-            new FeatureDto(feature.isEnabled(), feature.getConfigJson())
-        ));
+        .forEach(section -> {
+          UUID id = section.getId();
+          String type = ContentTranslator.SITE_SECTION;
+          sections.put(
+              section.getSectionKey(),
+              new SiteSectionDto(
+                  tr.text(type, id, "title", section.getTitle()),
+                  tr.text(type, id, "subtitle", section.getSubtitle()),
+                  tr.text(type, id, "body", section.getBody()),
+                  tr.json(type, id, "content_json", section.getContentJson()),
+                  section.getImageUrl(),
+                  tr.text(type, id, "cta_label", section.getCtaLabel()),
+                  section.getCtaUrl()
+              )
+          );
+        });
 
     BrandingDto branding = salonBrandingRepository.findByTenantId(tenantId)
         .map(b -> new BrandingDto(
@@ -142,7 +163,8 @@ public class PublicTenantService {
     return new TenantSiteResponse(
         tenant.getSlug(),
         tenant.getName(),
-        toSalonDto(profile),
+        locale,
+        toSalonDto(profile, tr),
         branding,
         primaryLocation == null ? null : toLocationDto(primaryLocation),
         salonSocialLinkRepository.findByTenantIdAndActiveTrueOrderByDisplayOrderAsc(tenantId)
@@ -154,16 +176,17 @@ public class PublicTenantService {
             .stream()
             .map(item -> new GalleryItemDto(
                 item.getMediaUrl(),
-                item.getAltText() != null ? item.getAltText() : item.getTitle(),
-                item.getCaption()
+                tr.text(ContentTranslator.GALLERY, item.getId(), "alt_text",
+                    item.getAltText() != null ? item.getAltText() : item.getTitle()),
+                tr.text(ContentTranslator.GALLERY, item.getId(), "caption", item.getCaption())
             ))
             .toList(),
         testimonialRepository.findByTenantIdAndPublishedTrueOrderByDisplayOrderAsc(tenantId)
             .stream()
             .map(item -> new TestimonialDto(
-                item.getContent(),
+                tr.text(ContentTranslator.TESTIMONIAL, item.getId(), "content", item.getContent()),
                 item.getAuthorName(),
-                item.getAuthorRole(),
+                tr.text(ContentTranslator.TESTIMONIAL, item.getId(), "author_role", item.getAuthorRole()),
                 item.getAvatarUrl()
             ))
             .toList(),
@@ -172,7 +195,33 @@ public class PublicTenantService {
     );
   }
 
-  private static SalonDto toSalonDto(SalonProfile profile) {
+  /**
+   * Returns the locale to overlay, or {@code null} for the tenant's default language.
+   * A locale is applied only if the tenant lists it in its {@code localization} feature
+   * and it differs from the tenant default (base rows already hold the default language).
+   */
+  @SuppressWarnings("unchecked")
+  private static String resolveLocale(String requested, FeatureDto localization) {
+    if (requested == null || requested.isBlank() || localization == null || !localization.enabled()) {
+      return null;
+    }
+    String wanted = requested.trim().toLowerCase(Locale.ROOT);
+    int dash = wanted.indexOf('-');
+    String language = dash > 0 ? wanted.substring(0, dash) : wanted;
+
+    Map<String, Object> config = localization.config();
+    Object defaultLocale = config != null ? config.get("default") : null;
+    Object offered = config != null ? config.get("locales") : null;
+    if (!(offered instanceof List<?> list) || !list.contains(language)) {
+      return null;
+    }
+    if (language.equalsIgnoreCase(String.valueOf(defaultLocale))) {
+      return null;
+    }
+    return language;
+  }
+
+  private static SalonDto toSalonDto(SalonProfile profile, ContentTranslator tr) {
     String phone = profile.getPhone();
     String phoneHref = phone == null || phone.isBlank()
         ? null
@@ -180,10 +229,11 @@ public class PublicTenantService {
 
     String address = joinAddress(profile.getAddressLine1(), profile.getState(), profile.getCity());
 
+    UUID id = profile.getId();
     return new SalonDto(
         profile.getDisplayName(),
-        profile.getTagline(),
-        profile.getDescription(),
+        tr.text(ContentTranslator.SALON_PROFILE, id, "tagline", profile.getTagline()),
+        tr.text(ContentTranslator.SALON_PROFILE, id, "description", profile.getDescription()),
         profile.getPhone(),
         profile.getPhoneDisplay() != null ? profile.getPhoneDisplay() : profile.getPhone(),
         phoneHref,
@@ -210,14 +260,15 @@ public class PublicTenantService {
     );
   }
 
-  private static ServiceDto toServiceDto(ServiceOffer service, ServicePrice price) {
+  private static ServiceDto toServiceDto(ServiceOffer service, ServicePrice price, ContentTranslator tr) {
     int amount = price != null ? price.getPriceCents() : 0;
     String currency = price != null ? price.getCurrency() : "RSD";
+    UUID id = service.getId();
     return new ServiceDto(
         service.getCode(),
         service.getCode(),
-        service.getName(),
-        service.getDescription(),
+        tr.text(ContentTranslator.SERVICE, id, "name", service.getName()),
+        tr.text(ContentTranslator.SERVICE, id, "description", service.getDescription()),
         service.getDurationMinutes(),
         amount,
         currency,

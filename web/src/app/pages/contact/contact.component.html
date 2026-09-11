@@ -1,36 +1,30 @@
 @if (salon(); as salon) {
   <section class="panel contact">
-    <p class="eyebrow">Kontakt</p>
-    <h1>Dođi ili nas pozovi</h1>
-    <p class="lede">
-      {{ salon.displayName }} je atelje za pse
-      @if (salon.state) {
-        na {{ salon.state }}
-      }
-      . Zakazivanje je i online, a za hitne termine javi se telefonom ili na Instagram.
-    </p>
+    <p class="eyebrow">{{ 'contact.eyebrow' | t }}</p>
+    <h1>{{ 'contact.title' | t }}</h1>
+    <p class="lede">{{ lede() }}</p>
 
     <div class="grid">
       <div class="cards">
         <article>
-          <p class="label">Telefon</p>
+          <p class="label">{{ 'contact.phone' | t }}</p>
           <a [href]="salon.phoneHref">{{ salon.phoneDisplay }}</a>
-          <p>Pozovi i dogovori termin.</p>
+          <p>{{ 'contact.phoneHint' | t }}</p>
         </article>
 
         <article>
-          <p class="label">Adresa</p>
+          <p class="label">{{ 'contact.address' | t }}</p>
           <a [href]="salon.mapsSearchUrl" target="_blank" rel="noopener noreferrer">{{
             salon.address
           }}</a>
-          <p>Otvori lokaciju u Google Mapama.</p>
+          <p>{{ 'contact.addressHint' | t }}</p>
         </article>
 
         @if (instagram(); as ig) {
           <article>
-            <p class="label">Instagram</p>
+            <p class="label">{{ 'contact.instagram' | t }}</p>
             <a [href]="ig.url" target="_blank" rel="noopener noreferrer">{{ ig.handle }}</a>
-            <p>Kupanje, šišanje i stilizovanje.</p>
+            <p>{{ 'contact.instagramHint' | t }}</p>
           </article>
         }
       </div>
@@ -38,7 +32,7 @@
       @if (mapUrl(); as url) {
         <div class="map-wrap">
           <iframe
-            [title]="salon.displayName + ' na Google mapi'"
+            [title]="'contact.mapTitle' | t: { name: salon.displayName }"
             [src]="url"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"

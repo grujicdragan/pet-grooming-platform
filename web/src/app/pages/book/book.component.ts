@@ -1,16 +1,17 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { BookingService } from '../../core/booking.service';
+import { LocalizedPricePipe, TranslatePipe } from '../../core/i18n.pipes';
+import { LocaleService } from '../../core/locale.service';
 import { LoyaltyService } from '../../core/loyalty.service';
 import { TenantStore } from '../../core/tenant.store';
 
 @Component({
   selector: 'app-book',
   standalone: true,
-  imports: [ReactiveFormsModule, DecimalPipe],
+  imports: [ReactiveFormsModule, TranslatePipe, LocalizedPricePipe],
   templateUrl: './book.component.html',
   styleUrl: './book.component.scss',
 })
@@ -19,8 +20,11 @@ export class BookComponent {
   private readonly router = inject(Router);
   private readonly booking = inject(BookingService);
   private readonly tenant = inject(TenantStore);
+  private readonly i18n = inject(LocaleService);
   readonly auth = inject(AuthService);
   readonly loyalty = inject(LoyaltyService);
+
+  readonly discountPct = computed(() => Math.round(this.loyalty.rewardDiscount() * 100));
 
   submitted = false;
   readonly minDate = this.todayLocal();
@@ -73,7 +77,7 @@ export class BookComponent {
       time: value.time,
       discounted,
       price: this.tenant.priceFor(value.service, discounted),
-      ownerName: user?.name ?? 'Gost',
+      ownerName: user?.name ?? this.i18n.t('book.guest'),
       ownerEmail: user?.email ?? '',
     });
     void this.router.navigateByUrl('/confirmation');

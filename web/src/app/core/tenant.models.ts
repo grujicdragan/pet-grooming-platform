@@ -73,6 +73,8 @@ export interface FeatureInfo {
 export interface TenantSite {
   slug: string;
   name: string;
+  /** Locale applied to content, or null for the tenant's default language. */
+  locale: string | null;
   salon: SalonInfo;
   branding: BrandingInfo | null;
   location: {

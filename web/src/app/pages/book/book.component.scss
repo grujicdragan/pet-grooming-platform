@@ -20,7 +20,7 @@ form {
   margin: 1rem 0 0;
   padding: 0.8rem 1rem;
   border-radius: 1rem;
-  background: #f8e4d6;
+  background: var(--chip-bg);
   color: var(--copper);
   font-weight: 600;
 }
@@ -45,7 +45,8 @@ form {
 
 .slot {
   border: 1px solid var(--line);
-  background: white;
+  background: var(--input-bg);
+  color: var(--ink);
   border-radius: 0.9rem;
   padding: 0.75rem 0.4rem;
   cursor: pointer;
@@ -53,7 +54,7 @@ form {
 
 .slot.selected {
   background: var(--moss);
-  color: white;
+  color: var(--on-primary);
   border-color: transparent;
 }
 

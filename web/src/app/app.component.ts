@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { BrandingApplier } from './core/branding-applier';
 import { ShellComponent } from './layout/shell.component';
 
 @Component({
@@ -12,4 +13,7 @@ import { ShellComponent } from './layout/shell.component';
     </app-shell>
   `,
 })
-export class AppComponent {}
+export class AppComponent {
+  /** Applies tenant colors / fonts from API when site data loads. */
+  private readonly _branding = inject(BrandingApplier);
+}

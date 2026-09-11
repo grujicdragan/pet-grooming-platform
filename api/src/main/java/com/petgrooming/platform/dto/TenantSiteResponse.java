@@ -6,6 +6,8 @@ import java.util.Map;
 public record TenantSiteResponse(
     String slug,
     String name,
+    /** Locale actually applied to the content (null = tenant default language). */
+    String locale,
     SalonDto salon,
     BrandingDto branding,
     LocationDto location,

@@ -5,6 +5,20 @@
     <title>Šapelier — atelje za pse</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6efe4" />
+    <!-- Apply stored / system theme before first paint to avoid a light flash.
+         Key must match ThemeService.STORAGE_KEY. -->
+    <script>
+      (function () {
+        try {
+          var pref = localStorage.getItem('pgp-theme');
+          var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (pref === 'dark' || (pref !== 'light' && systemDark)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" type="image/png" href="images/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

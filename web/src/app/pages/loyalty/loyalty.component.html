@@ -1,48 +1,42 @@
 <section class="panel loyalty">
-  <p class="eyebrow">Loyalty program</p>
-  <h1>Svaki {{ cycle() }}. tretman je {{ discountPercent() }}% jeftiniji</h1>
-  <p class="lede">
-    Jednostavna kartica: {{ cycle() }} pečata, poslednji je nagrada. Nema poena, nema sitnog tiskanog —
-    samo ritam koji je lako objasniti klijentu.
-  </p>
+  <p class="eyebrow">{{ 'loyalty.eyebrow' | t }}</p>
+  <h1>{{ 'loyalty.title' | t: { per: cycle(), discount: discountPercent() } }}</h1>
+  <p class="lede">{{ 'loyalty.lede' | t: { per: cycle() } }}</p>
 
   <div class="card">
     <div class="card-head">
       <strong>{{ auth.user()?.name }}</strong>
-      <span class="chip">{{ auth.user()?.treatmentsCompleted }} tretmana do sada</span>
+      <span class="chip">{{ 'loyalty.completed' | t: { n: auth.user()?.treatmentsCompleted ?? 0 } }}</span>
     </div>
 
     <div class="stamps" role="list">
       @for (stamp of loyalty.stamps(); track stamp.number) {
         <div class="stamp" role="listitem" [class.filled]="stamp.filled" [class.reward]="stamp.reward">
           <span>{{ stamp.reward ? discountPercent() + '%' : '🐾' }}</span>
-          <small>{{ stamp.reward ? 'nagrada' : 'tretman ' + stamp.number }}</small>
+          <small>{{ stamp.reward ? ('loyalty.reward' | t) : ('loyalty.stamp' | t: { n: stamp.number }) }}</small>
         </div>
       }
     </div>
 
     <p class="status">
       @if (loyalty.nextIsReward()) {
-        Sledeće zakazivanje aktivira popust od {{ discountPercent() }}%.
+        {{ 'loyalty.nextIsReward' | t: { discount: discountPercent() } }}
       } @else {
-        Još {{ loyalty.treatmentsUntilReward() }} tretmana do nagrade.
+        {{ 'loyalty.untilReward' | t: { n: loyalty.treatmentsUntilReward() } }}
       }
     </p>
   </div>
 
   <div class="rules">
     <article>
-      <h2>Kako radi</h2>
-      <p>
-        Svaki završen tretman popunjava jedan pečat. {{ cycle() }}. u ciklusu automatski dobija
-        {{ discountPercent() }}% popusta.
-      </p>
+      <h2>{{ 'loyalty.howTitle' | t }}</h2>
+      <p>{{ 'loyalty.howText' | t: { per: cycle(), discount: discountPercent() } }}</p>
     </article>
     <article>
-      <h2>Zašto ovo</h2>
-      <p>Lakše je zapamtiti od komplikovanih bodova. Klijent vidi napredak na jednoj kartici.</p>
+      <h2>{{ 'loyalty.whyTitle' | t }}</h2>
+      <p>{{ 'loyalty.whyText' | t }}</p>
     </article>
   </div>
 
-  <a routerLink="/book" class="btn btn-primary">Zakaži naredni tretman</a>
+  <a routerLink="/book" class="btn btn-primary">{{ 'loyalty.cta' | t }}</a>
 </section>

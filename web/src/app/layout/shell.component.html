@@ -16,7 +16,7 @@
       aria-controls="site-menu"
       (click)="toggleMenu()"
     >
-      <span class="sr-only">{{ menuOpen() ? 'Zatvori meni' : 'Otvori meni' }}</span>
+      <span class="sr-only">{{ (menuOpen() ? 'menu.close' : 'menu.open') | t }}</span>
       <span class="menu-toggle-icon" aria-hidden="true">
         <span></span>
         <span></span>
@@ -25,26 +25,32 @@
     </button>
 
     @if (menuOpen()) {
-      <button type="button" class="backdrop" aria-label="Zatvori meni" (click)="closeMenu()"></button>
+      <button type="button" class="backdrop" [attr.aria-label]="'menu.close' | t" (click)="closeMenu()"></button>
     }
 
     <div id="site-menu" class="menu" [class.open]="menuOpen()">
-      <nav class="nav" aria-label="Glavna navigacija">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Početna</a>
-        <a routerLink="/pricing" routerLinkActive="active">Cenovnik</a>
-        <a routerLink="/book" routerLinkActive="active">Zakazivanje</a>
-        <a routerLink="/loyalty" routerLinkActive="active">Loyalty</a>
-        <a routerLink="/contact" routerLinkActive="active">Kontakt</a>
-        <a routerLink="/admin" routerLinkActive="active">Admin</a>
+      <nav class="nav" [attr.aria-label]="'nav.label' | t">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.home' | t }}</a>
+        <a routerLink="/pricing" routerLinkActive="active">{{ 'nav.pricing' | t }}</a>
+        <a routerLink="/book" routerLinkActive="active">{{ 'nav.book' | t }}</a>
+        <a routerLink="/loyalty" routerLinkActive="active">{{ 'nav.loyalty' | t }}</a>
+        <a routerLink="/contact" routerLinkActive="active">{{ 'nav.contact' | t }}</a>
+        <a routerLink="/admin" routerLinkActive="active">{{ 'nav.admin' | t }}</a>
       </nav>
 
       <div class="session">
+        @if (i18n.switchable()) {
+          <app-language-switcher />
+        }
+        @if (theme.enabled()) {
+          <app-theme-toggle />
+        }
         @if (auth.user(); as user) {
-          <span class="hello">Zdravo, {{ user.name }}</span>
-          <button type="button" class="ghost" (click)="logout()">Odjava</button>
+          <span class="hello">{{ 'session.hello' | t: { name: user.name } }}</span>
+          <button type="button" class="ghost" (click)="logout()">{{ 'session.logout' | t }}</button>
         } @else {
-          <a routerLink="/login" class="ghost">Prijava</a>
-          <a routerLink="/register" class="primary-link">Registracija</a>
+          <a routerLink="/login" class="ghost">{{ 'session.login' | t }}</a>
+          <a routerLink="/register" class="primary-link">{{ 'session.register' | t }}</a>
         }
       </div>
     </div>
@@ -52,7 +58,7 @@
 
   <main class="content">
     @if (tenant.error(); as err) {
-      <p class="api-error" role="alert">{{ err }}</p>
+      <p class="api-error" role="alert">{{ err | t }}</p>
     }
     <ng-content />
   </main>

@@ -18,7 +18,8 @@
 .filters button,
 .action-btns button {
   border: 1px solid var(--line);
-  background: white;
+  background: var(--input-bg);
+  color: var(--ink);
   border-radius: 999px;
   padding: 0.4rem 0.8rem;
   cursor: pointer;
@@ -27,7 +28,7 @@
 
 .filters .active {
   background: var(--moss);
-  color: white;
+  color: var(--on-primary);
   border-color: transparent;
 }
 
@@ -65,13 +66,13 @@ th {
 }
 
 .status[data-status='cancelled'] {
-  background: #f8e4d6;
+  background: var(--chip-bg);
   color: var(--copper);
 }
 
 .status[data-status='completed'] {
-  background: #e8f0ff;
-  color: #314e86;
+  background: var(--info-bg);
+  color: var(--info-fg);
 }
 
 .actions {

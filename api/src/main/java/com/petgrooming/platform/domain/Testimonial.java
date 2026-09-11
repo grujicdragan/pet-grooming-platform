@@ -36,6 +36,10 @@ public class Testimonial {
   @Column(name = "is_published", nullable = false)
   private boolean published;
 
+  public UUID getId() {
+    return id;
+  }
+
   public UUID getTenantId() {
     return tenantId;
   }

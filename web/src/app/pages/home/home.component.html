@@ -1,5 +1,5 @@
 @if (tenant.loading()) {
-  <p class="loading">Učitavanje…</p>
+  <p class="loading">{{ 'common.loading' | t }}</p>
 } @else if (salon()) {
   @let s = salon()!;
   @let heroSection = hero();
@@ -17,9 +17,9 @@
       <p class="lede">{{ heroBody() }}</p>
       <div class="actions">
         <a routerLink="/book" class="btn btn-primary">
-          {{ heroSection?.ctaLabel || 'Zakaži termin' }} <span aria-hidden="true">→</span>
+          {{ heroSection?.ctaLabel || ('home.bookCta' | t) }} <span aria-hidden="true">→</span>
         </a>
-        <a routerLink="/pricing" class="btn btn-secondary">Pogledaj cenovnik</a>
+        <a routerLink="/pricing" class="btn btn-secondary">{{ 'home.viewPricing' | t }}</a>
       </div>
       <dl class="stats">
         @for (stat of stats(); track stat.label) {
@@ -32,7 +32,7 @@
     </div>
 
     <figure class="hero-photo" appReveal [appRevealDelay]="140">
-      <img [src]="heroImage()" alt="Ljubimci u salonu" width="1200" height="900" />
+      <img [src]="heroImage()" [alt]="'home.heroAlt' | t" width="1200" height="900" />
       <figcaption class="float-card">
         <span class="float-icon" aria-hidden="true">🛁</span>
         <span>
@@ -65,10 +65,10 @@
   <section class="services">
     <div class="section-head" appReveal>
       <div>
-        <p class="eyebrow">Usluge</p>
-        <h2>Od brzog nokta do punog groominga</h2>
+        <p class="eyebrow">{{ 'home.servicesEyebrow' | t }}</p>
+        <h2>{{ 'home.servicesTitle' | t }}</h2>
       </div>
-      <a routerLink="/pricing" class="link-arrow">Ceo cenovnik <span aria-hidden="true">→</span></a>
+      <a routerLink="/pricing" class="link-arrow">{{ 'home.fullPricing' | t }} <span aria-hidden="true">→</span></a>
     </div>
     <div class="service-grid">
       @for (service of services(); track service.id; let i = $index) {
@@ -77,15 +77,15 @@
           <h3>{{ service.label }}</h3>
           <p>{{ service.blurb }}</p>
           <div class="service-meta">
-            <strong>{{ service.price | currency: service.currency : 'symbol' : '1.0-0' }}</strong>
-            <span>{{ service.minutes }} min</span>
+            <strong>{{ service.price | price: service.currency }}</strong>
+            <span>{{ service.minutes }} {{ 'common.minutes' | t }}</span>
           </div>
         </a>
       }
     </div>
   </section>
 
-  <section class="gallery" aria-label="Salon i ljubimci">
+  <section class="gallery" [attr.aria-label]="'home.galleryLabel' | t">
     @for (item of gallery(); track item.src; let i = $index) {
       <figure appReveal [appRevealDelay]="i * 80">
         <img [src]="item.src" [alt]="item.alt" loading="lazy" />
@@ -97,8 +97,8 @@
   <section class="steps">
     <div class="section-head" appReveal>
       <div>
-        <p class="eyebrow">Kako radi</p>
-        <h2>Tri koraka do mirnog ljubimca</h2>
+        <p class="eyebrow">{{ 'home.stepsEyebrow' | t }}</p>
+        <h2>{{ 'home.stepsTitle' | t }}</h2>
       </div>
     </div>
     <ol class="step-list">
@@ -114,13 +114,10 @@
 
   <section class="loyalty-banner" appReveal>
     <div class="loyalty-copy">
-      <p class="eyebrow light">Loyalty</p>
-      <h2>Peti tretman ide sa {{ loyaltyDiscountPct() }}% popusta.</h2>
-      <p>
-        Svaki završen termin je pečat. {{ loyaltyPerReward() }} pečata, jedan poklon — bez aplikacija
-        za skidanje i bez kartica u novčaniku.
-      </p>
-      <a routerLink="/loyalty" class="btn btn-light">Moja kartica</a>
+      <p class="eyebrow light">{{ 'home.loyaltyEyebrow' | t }}</p>
+      <h2>{{ 'home.loyaltyTitle' | t: { per: loyaltyPerReward(), discount: loyaltyDiscountPct() } }}</h2>
+      <p>{{ 'home.loyaltyText' | t: { per: loyaltyPerReward() } }}</p>
+      <a routerLink="/loyalty" class="btn btn-light">{{ 'home.myCard' | t }}</a>
     </div>
     <ul class="stamps" aria-hidden="true">
       @for (n of stamps(); track n; let i = $index) {
@@ -134,8 +131,8 @@
   <section class="stories">
     <div class="section-head" appReveal>
       <div>
-        <p class="eyebrow">Utisci</p>
-        <h2>Šta kažu vlasnici</h2>
+        <p class="eyebrow">{{ 'home.storiesEyebrow' | t }}</p>
+        <h2>{{ 'home.storiesTitle' | t }}</h2>
       </div>
     </div>
     <div appReveal [appRevealDelay]="100">
