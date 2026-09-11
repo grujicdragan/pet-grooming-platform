@@ -2,9 +2,11 @@ spring:
   application:
     name: pet-grooming-api
   datasource:
-    url: jdbc:postgresql://localhost:5432/petgrooming
-    username: petgrooming
-    password: petgrooming
+    # Override with SPRING_DATASOURCE_* (see api/.env for Neon POC).
+    # Use Neon *pooled* host for the app; omit channel_binding (JDBC does not need it).
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/petgrooming}
+    username: ${SPRING_DATASOURCE_USERNAME:petgrooming}
+    password: ${SPRING_DATASOURCE_PASSWORD:petgrooming}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,8 +20,9 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 app:
   cors:
-    allowed-origins: http://localhost:4200,http://127.0.0.1:4200
+    # Comma-separated. On Render/Vercel set APP_CORS_ALLOWED_ORIGINS to the web origin(s).
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200,http://127.0.0.1:4200}
