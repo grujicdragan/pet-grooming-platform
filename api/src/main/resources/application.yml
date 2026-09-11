@@ -25,4 +25,4 @@ server:
 app:
   cors:
     # Comma-separated. On Render/Vercel set APP_CORS_ALLOWED_ORIGINS to the web origin(s).
-    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200,http://127.0.0.1:4200,https://pet-grooming-platform-seven.vercel.app}
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200,http://127.0.0.1:4200,https://pet-grooming.vercel.app,https://pet-grooming-platform-seven.vercel.app}
