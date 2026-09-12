@@ -23,6 +23,7 @@ export class ShellComponent {
   readonly theme = inject(ThemeService);
   readonly i18n = inject(LocaleService);
   readonly menuOpen = signal(false);
+  private readonly router = inject(Router);
 
   readonly logoUrl = computed(() => this.tenant.branding()?.logoUrl ?? 'images/logo.png');
   readonly footerText = computed(() => {
@@ -38,7 +39,7 @@ export class ShellComponent {
   });
 
   constructor() {
-    inject(Router)
+    this.router
       .events.pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         takeUntilDestroyed(),
@@ -57,5 +58,6 @@ export class ShellComponent {
   logout(): void {
     this.auth.logout();
     this.closeMenu();
+    void this.router.navigateByUrl('/');
   }
 }

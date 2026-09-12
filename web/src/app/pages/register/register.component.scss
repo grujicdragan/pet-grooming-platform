@@ -19,3 +19,9 @@ form {
   color: var(--moss);
   font-weight: 600;
 }
+
+.auth .btn-primary {
+  display: inline-flex;
+  margin-top: 0.4rem;
+  width: fit-content;
+}

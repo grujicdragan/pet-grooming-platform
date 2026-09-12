@@ -15,6 +15,8 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+        type:
+          preferred_enum_jdbc_type: NAMED_ENUM
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -26,3 +28,11 @@ app:
   cors:
     # Comma-separated. On Render/Vercel set APP_CORS_ALLOWED_ORIGINS to the web origin(s).
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200,http://127.0.0.1:4200,https://pet-grooming.vercel.app,https://pet-grooming-platform-seven.vercel.app}
+  jwt:
+    secret: ${APP_JWT_SECRET:local-dev-jwt-secret-change-me-32b!!}
+    ttl: ${APP_JWT_TTL:8h}
+  web-origin: ${APP_WEB_ORIGIN:http://localhost:4200}
+  mail:
+    provider: ${APP_MAIL_PROVIDER:log}
+    from: ${APP_MAIL_FROM:Šapelier <noreply@sapelier.local>}
+    resend-api-key: ${RESEND_API_KEY:}

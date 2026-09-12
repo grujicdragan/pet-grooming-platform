@@ -20,7 +20,9 @@
       }
     </label>
 
-    <button class="btn btn-primary" type="submit">{{ 'login.submit' | t }}</button>
+    <button class="btn btn-primary" type="submit" [disabled]="busy()">
+      {{ (busy() ? 'common.loading' : 'login.submit') | t }}
+    </button>
   </form>
 
   <p class="switch">{{ 'login.noAccount' | t }} <a routerLink="/register">{{ 'login.register' | t }}</a></p>

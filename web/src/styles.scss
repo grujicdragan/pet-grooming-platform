@@ -113,6 +113,10 @@ html.theme-transition *::after {
   box-sizing: border-box;
 }
 
+:root {
+  --header-height: 5.05rem;
+}
+
 html,
 body {
   margin: 0;
@@ -192,6 +196,13 @@ select {
 
 .btn:active {
   transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-primary {
@@ -283,4 +294,22 @@ select {
   color: var(--copper);
   font-size: 0.78rem;
   font-weight: 600;
+}
+
+app-toast-host {
+  position: fixed !important;
+  top: calc(var(--header-height, 5.05rem) + 0.5rem) !important;
+  right: 1.1rem !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: 10000;
+  display: block;
+  width: min(22.5rem, calc(100vw - 2.2rem));
+  pointer-events: none;
+}
+
+@media (min-width: 981px) {
+  app-toast-host {
+    right: 6vw !important;
+  }
 }

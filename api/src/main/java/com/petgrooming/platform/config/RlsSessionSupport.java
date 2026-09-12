@@ -1,6 +1,7 @@
 package com.petgrooming.platform.config;
 
 import jakarta.persistence.EntityManager;
+import java.util.UUID;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,16 @@ public class RlsSessionSupport {
     session.doWork(connection -> {
       try (var statement = connection.createStatement()) {
         statement.execute("SELECT set_config('app.bypass_rls', 'true', true)");
+      }
+    });
+  }
+
+  public void setCurrentTenant(UUID tenantId) {
+    Session session = entityManager.unwrap(Session.class);
+    session.doWork(connection -> {
+      try (var statement = connection.prepareStatement("SELECT set_config('app.current_tenant_id', ?, true)")) {
+        statement.setString(1, tenantId.toString());
+        statement.execute();
       }
     });
   }

@@ -16,6 +16,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  min-height: var(--header-height);
 }
 
 .brand {
@@ -89,15 +90,33 @@
   font-size: 0.9rem;
 }
 
+.topbar-end {
+  display: contents;
+}
+
+.theme-in-bar {
+  display: none;
+}
+
+.theme-in-session {
+  display: contents;
+}
+
 .ghost,
 .primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 2.25rem;
+  padding: 0.1em 0.95rem 0;
+  font: inherit;
+  line-height: 1.1;
   text-decoration: none;
   border: 1px solid var(--line);
   background: transparent;
   color: var(--ink);
   border-radius: 999px;
-  padding: 0.45rem 0.95rem;
-  font: inherit;
   cursor: pointer;
 }
 
@@ -138,6 +157,22 @@
   .topbar {
     grid-template-columns: 1fr auto;
     padding-inline: 1.1rem;
+  }
+
+  .topbar-end {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 12;
+  }
+
+  .theme-in-bar {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .theme-in-session {
+    display: none;
   }
 
   .menu-toggle {

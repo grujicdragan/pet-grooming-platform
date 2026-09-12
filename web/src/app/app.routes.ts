@@ -16,6 +16,11 @@ export const routes: Routes = [
       import('./pages/register/register.component').then((m) => m.RegisterComponent),
   },
   {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./pages/register/verify-email.component').then((m) => m.VerifyEmailComponent),
+  },
+  {
     path: 'pricing',
     loadComponent: () =>
       import('./pages/pricing/pricing.component').then((m) => m.PricingComponent),
