@@ -1,8 +1,8 @@
 name: Deploy to GitHub Pages
 
+# Production frontend is Vercel. Keep this workflow manual so pushes to
+# `gh-pages` do not trigger a failing Vercel preview (that branch is static HTML only).
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
